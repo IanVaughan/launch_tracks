@@ -13,9 +13,19 @@ command, port = ARGV
 
 help = "Usage: launch_tracks help|setup PORTNUMBER|load|unload|restart|rm"
 
+def in_use(plist_dir)
+  files = Dir.glob(File.join(plist_dir, 'com.github.matsadler.launch_tracks.*'))
+  files.each do |f|
+    port = %x{ egrep -o '>([0-9]{4})<' #{f} }
+    puts "#{File.basename(f).gsub('com.github.matsadler.launch_tracks.','').gsub('.plist','')} : #{port}"
+  end
+end
+
 case command
 when "help", "-h", "--help"
   puts help
+when "info"
+  in_use plist_dir
   exit
 when "load"
   exec "launchctl load #{plist_path}"
